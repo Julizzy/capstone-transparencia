@@ -16,7 +16,6 @@ def obtener_metadata_subsidios():
         "descripcion": metadata.get("description"),
         "fuente": metadata.get("attribution"),
         "frecuencia_actualizacion": metadata.get("rowsUpdatedAt"),
-        "url_dataset": metadata.get("permalink"),
         "columnas": [col["name"] for col in metadata.get("columns", [])]
     }
 

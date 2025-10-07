@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -19,40 +19,39 @@ type Subsidy = {
   fechaActualizacion: string;
 };
 
-const SUBSIDIOS: Subsidy[] = [
-  {
-    id: 1,
-    nombre: "Subsidio de Vivienda Jóvenes Propietarios",
-    descripcion:
-      "Programa para jóvenes entre 18 y 28 años que buscan adquirir su primera vivienda.",
-    ciudad: "Bogotá",
-    edadMin: 18,
-    edadMax: 28,
-    ingresos: "hasta 4 SMMLV",
-    fuente: "https://www.minvivienda.gov.co/",
-    fechaActualizacion: "2024-12-15",
-  },
-  {
-    id: 2,
-    nombre: "Ingreso Solidario",
-    descripcion:
-      "Apoyo económico a familias en condición de vulnerabilidad no beneficiarias de otros programas.",
-    ciudad: "Medellín",
-    edadMin: 18,
-    edadMax: 65,
-    ingresos: "hasta 2 SMMLV",
-    fuente: "https://prosperidadsocial.gov.co/",
-    fechaActualizacion: "2025-02-01",
-  },
-];
-
 export default function SubsidiosPage() {
   const [filtros, setFiltros] = useState({ ciudad: "", edad: "", ingresos: "" });
-  const [resultados, setResultados] = useState<Subsidy[]>(SUBSIDIOS);
+  const [resultados, setResultados] = useState<Subsidy[]>([]);
+  const [subsidios, setSubsidios] = useState<Subsidy[]>([]);
   const router = useRouter();
 
+  useEffect(() => {
+    // Consumir el endpoint y mapear la respuesta
+    fetch("http://127.0.0.1:8000/api/datasets/metadata")
+      .then((res) => res.json())
+      .then((data) => {
+        const meta = data.subsidiosVivienda;
+        // Puedes ajustar los valores según lo que necesites mostrar
+        const subsidio: Subsidy = {
+          id: 1,
+          nombre: meta.titulo,
+          descripcion: meta.descripcion,
+          ciudad: "Nacional", // O puedes dejarlo vacío si no aplica
+          edadMin: 0,
+          edadMax: 99,
+          ingresos: "No especificado",
+          fuente: meta.fuente,
+          fechaActualizacion: meta.frecuencia_actualizacion
+            ? new Date(meta.frecuencia_actualizacion * 1000).toISOString().split("T")[0]
+            : "",
+        };
+        setSubsidios([subsidio]);
+        setResultados([subsidio]);
+      });
+  }, []);
+
   const handleSearch = () => {
-    const filtrados = SUBSIDIOS.filter((s) => {
+    const filtrados = subsidios.filter((s) => {
       const matchCiudad =
         filtros.ciudad === "" ||
         s.ciudad.toLowerCase().includes(filtros.ciudad.toLowerCase());
@@ -123,13 +122,11 @@ export default function SubsidiosPage() {
               </CardHeader>
               <CardContent className="text-sm text-gray-700">
                 <p>
-                  <strong>Ciudad:</strong> {s.ciudad}
+                  <strong>Fuente:</strong> {s.fuente}
                 </p>
                 <p>
-                  <strong>Rango de edad:</strong> {s.edadMin} – {s.edadMax}
-                </p>
-                <p>
-                  <strong>Ingresos:</strong> {s.ingresos}
+                  <strong>Última actualización:</strong>{" "}
+                  {s.fechaActualizacion}
                 </p>
               </CardContent>
             </Card>
