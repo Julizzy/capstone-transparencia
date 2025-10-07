@@ -8,25 +8,25 @@ count_url = f"{BASE_URL}/{DATASET_ID}.json?$select=count(*)"
 total = int(requests.get(count_url).json()[0]['count'])
 print("Total de registros:", total)
 
-def obtener_subsidios(limit: int = 100000):
-    data_url = f"{BASE_URL}/{DATASET_ID}.json?$limit={total}"
+def obtener_metadata_subsidios():
     meta_url = f"https://www.datos.gov.co/api/views/{DATASET_ID}"
-
-    data = requests.get(data_url).json()
     metadata = requests.get(meta_url).json()
-
-    meta_info = {
+    return {
         "titulo": metadata.get("name"),
         "descripcion": metadata.get("description"),
-        "publicado_por": metadata.get("metadata", {}).get("custom_fields", {}).get("Responsable"),
-        "ultima_actualizacion": metadata.get("publicationDate"),
-        "columnas": [col["name"] for col in metadata.get("columns", [])],
+        "fuente": metadata.get("attribution"),
+        "frecuencia_actualizacion": metadata.get("rowsUpdatedAt"),
+        "url_dataset": metadata.get("permalink"),
+        "columnas": [col["name"] for col in metadata.get("columns", [])]
     }
 
+def obtener_subsidios(limit: int = 100000):
+    data_url = f"{BASE_URL}/{DATASET_ID}.json?$limit={total}"
+
+    data = requests.get(data_url).json()
     promedios = calcular_promedios_por_departamento(data)
 
-    return {
-        "metadata": meta_info, 
+    return { 
         "registros": data,
         "analisis": {
             "promedios_por_departamento": promedios

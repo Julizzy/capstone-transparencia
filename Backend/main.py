@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import subsidiosVivienda_router
+from routers import datasets_metadata_router
 
 app = FastAPI(
-    title="API MVP de Datos Abiertos",
+    title="Capstone Transparencia API",
     description="API que conecta datasets de datos.gov.co",
     version="1.0.0"
 )
@@ -18,6 +19,7 @@ app.add_middleware(
 
 # Registrar los routers
 app.include_router(subsidiosVivienda_router.router)
+app.include_router(datasets_metadata_router.router)
 
 @app.get("/")
 def root():
