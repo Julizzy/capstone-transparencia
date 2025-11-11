@@ -14,7 +14,7 @@ export function Navbar() {
           width={90}
           height={90}
         />
-        <h1 className="font-bold text-2xl text-[#0197cb]">SUBSIDIOS</h1>
+        <h1 className="font-bold text-2xl text-[#0197cb]">GovLens</h1>
       </div>
 
       <div className="flex gap-4">
