@@ -25,6 +25,7 @@ export default function SubsidiosPage() {
   const [subsidios, setSubsidios] = useState<Subsidy[]>([]);
   const router = useRouter();
 
+ /*
   useEffect(() => {
     // Consumir el endpoint y mapear la respuesta
     fetch("http://127.0.0.1:8000/api/datasets/metadata")
@@ -49,6 +50,7 @@ export default function SubsidiosPage() {
         setResultados([subsidio]);
       });
   }, []);
+  */
 
   const handleSearch = () => {
     const filtrados = subsidios.filter((s) => {
