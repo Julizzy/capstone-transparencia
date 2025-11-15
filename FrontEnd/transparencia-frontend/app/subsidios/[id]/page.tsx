@@ -16,6 +16,8 @@ export default function SubsidioDataPage() {
   const [data, setData] = useState<Subsidio[]>([]);
   const [promedios, setPromedios] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filterText, setFilterText] = useState("");
+  const [limit, setLimit] = useState(100); 
 
   useEffect(() => {
     const fetchSubsidios = async () => {
@@ -46,6 +48,13 @@ export default function SubsidioDataPage() {
     );
   }
 
+  
+  const filteredData = data.filter((row) =>
+    Object.values(row).some((val) =>
+      String(val).toLowerCase().includes(filterText.toLowerCase())
+    )
+  );
+
   return (
     <div className="max-w-6xl mx-auto p-6">
       <Card className="border border-[#5111a6]/30 shadow-md">
@@ -56,7 +65,35 @@ export default function SubsidioDataPage() {
         </CardHeader>
 
         <CardContent>
-          <h2 className="text-xl font-semibold text-[#5111a6] mt-4 mb-2">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
+            <input
+              type="text"
+              placeholder="Filtrar por cualquier campo..."
+              value={filterText}
+              onChange={(e) => setFilterText(e.target.value)}
+              className="border rounded-lg px-3 py-2 w-full sm:w-1/2 text-sm focus:outline-none focus:ring-2 focus:ring-[#5111a6]"
+            />
+
+            <div className="flex items-center gap-2">
+              <label htmlFor="limit" className="text-sm text-gray-600">
+                Filas a mostrar:
+              </label>
+              <select
+                id="limit"
+                value={limit}
+                onChange={(e) => setLimit(Number(e.target.value))}
+                className="border rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#5111a6]"
+              >
+                {[50, 100, 200, 500].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <h2 className="text-xl font-semibold text-[#5111a6] mb-2">
             Registros del dataset
           </h2>
 
@@ -75,7 +112,7 @@ export default function SubsidioDataPage() {
                 </tr>
               </thead>
               <tbody>
-                {data.slice(0, 100).map((row, i) => ( 
+                {filteredData.slice(0, limit).map((row, i) => (
                   <tr key={i} className="border-b hover:bg-gray-50">
                     {Object.values(row).map((value, j) => (
                       <td key={j} className="p-2 text-gray-700 break-words">
@@ -87,6 +124,7 @@ export default function SubsidioDataPage() {
               </tbody>
             </table>
           </div>
+
           {promedios.length > 0 && (
             <>
               <h2 className="text-xl font-semibold text-[#5111a6] mt-6 mb-2">

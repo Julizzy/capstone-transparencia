@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/Card";
 import { Search } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+
 
 type Subsidy = {
   id: number;
@@ -24,6 +26,11 @@ export default function SubsidiosPage() {
   const [resultados, setResultados] = useState<Subsidy[]>([]);
   const [subsidios, setSubsidios] = useState<Subsidy[]>([]);
   const router = useRouter();
+  const [search, setSearch] = useState("");
+  const searchParams = useSearchParams();
+  const query = searchParams.get("query") || "";
+
+
 
   useEffect(() => {
     // Consumir el endpoint y mapear la respuesta
@@ -49,23 +56,35 @@ export default function SubsidiosPage() {
         setResultados([subsidio]);
       });
   }, []);
+  // When arriving from /search?query=xxxx → auto-fill and auto-search
+  useEffect(() => {
+    if (query) {
+      setSearch(query);
+      setResultados(
+        subsidios.filter((s) =>
+          s.nombre.toLowerCase().includes(query.toLowerCase()) ||
+          s.descripcion.toLowerCase().includes(query.toLowerCase()) ||
+          s.ciudad.toLowerCase().includes(query.toLowerCase())
+        )
+      );
+    }
+  }, [query, subsidios]);
+
 
   const handleSearch = () => {
+    const query = search.toLowerCase();
+
     const filtrados = subsidios.filter((s) => {
-      const matchCiudad =
-        filtros.ciudad === "" ||
-        s.ciudad.toLowerCase().includes(filtros.ciudad.toLowerCase());
-      const matchEdad =
-        filtros.edad === "" ||
-        (parseInt(filtros.edad) >= s.edadMin &&
-          parseInt(filtros.edad) <= s.edadMax);
-      const matchIngresos =
-        filtros.ingresos === "" ||
-        s.ingresos.toLowerCase().includes(filtros.ingresos.toLowerCase());
-      return matchCiudad && matchEdad && matchIngresos;
+      return (
+        s.nombre.toLowerCase().includes(query) ||
+        s.ciudad.toLowerCase().includes(query) ||
+        s.descripcion.toLowerCase().includes(query)
+      );
     });
+
     setResultados(filtrados);
   };
+
 
   const handleCardClick = (id: number) => {
     router.push(`/subsidios/${id}`);
@@ -78,7 +97,15 @@ export default function SubsidiosPage() {
       </h1>
 
       {/* Filtros */}
+      {/* Search bar */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <Input
+          placeholder="Buscar por nombre, municipio o programa"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="md:col-span-4"
+        />
+
         <Input
           placeholder="Ciudad"
           value={filtros.ciudad}
