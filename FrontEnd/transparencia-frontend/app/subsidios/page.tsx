@@ -32,6 +32,7 @@ export default function SubsidiosPage() {
 
 
 
+ /*
   useEffect(() => {
     // Consumir el endpoint y mapear la respuesta
     fetch("http://127.0.0.1:8000/api/datasets/metadata")
@@ -56,20 +57,6 @@ export default function SubsidiosPage() {
         setResultados([subsidio]);
       });
   }, []);
-  // When arriving from /search?query=xxxx → auto-fill and auto-search
-  useEffect(() => {
-    if (query) {
-      setSearch(query);
-      setResultados(
-        subsidios.filter((s) =>
-          s.nombre.toLowerCase().includes(query.toLowerCase()) ||
-          s.descripcion.toLowerCase().includes(query.toLowerCase()) ||
-          s.ciudad.toLowerCase().includes(query.toLowerCase())
-        )
-      );
-    }
-  }, [query, subsidios]);
-
 
   const handleSearch = () => {
     const query = search.toLowerCase();

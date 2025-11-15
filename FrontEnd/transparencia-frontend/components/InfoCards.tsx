@@ -7,7 +7,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/Card";
-import { HandCoins, Building } from "lucide-react";
+import { HandCoins, Building, BarChart3, LineChart } from "lucide-react";
 
 export function InfoCards() {
   const router = useRouter();
@@ -27,6 +27,20 @@ export function InfoCards() {
       icon: <Building className="w-10 h-10 text-[#8030eb]" />,
       path: "/programas",
     },
+    {
+      title: "Panel de Control",
+      description:
+        "Visualiza datos clave, estadísticas y evolución de subsidios en tiempo real.",
+      icon: <BarChart3 className="w-10 h-10 text-[#8030eb]" />,
+      path: "/dashboard",
+    },
+    {
+      title: "Visualizaciones Comparativas",
+      description:
+        "Compara montos de subsidios y beneficiarios por región y año.",
+      icon: <LineChart className="w-10 h-10 text-[#8030eb]" />,
+      path: "/visualizaciones",
+    },
   ];
 
   const handleClick = (path: string) => router.push(path);
@@ -37,14 +51,14 @@ export function InfoCards() {
         ¿Qué puedes encontrar aquí?
       </h3>
 
-      {/* 🟣 Contenedor horizontal centrado */}
+      {/* 🟣 Grid responsive en 2x2 */}
       <div className="flex justify-center">
-        <div className="flex gap-6 overflow-x- px-6 pb-4 justify-center w-full max-w-5xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 w-full max-w-5xl">
           {cards.map((card, index) => (
             <Card
               key={index}
               onClick={() => handleClick(card.path)}
-              className="min-w-[260px] sm:min-w-[280px] md:min-w-[300px] flex-shrink-0 cursor-pointer border border-[#8030eb]/30 shadow-md hover:shadow-lg transition-transform hover:scale-[1.03] hover:border-[#5111a6]/70 rounded-2xl bg-white"
+              className="cursor-pointer border border-[#8030eb]/30 shadow-md hover:shadow-lg transition-transform hover:scale-[1.03] hover:border-[#5111a6]/70 rounded-2xl bg-white"
             >
               <CardHeader className="flex flex-col items-center text-center py-8">
                 <div className="flex justify-center mb-3">{card.icon}</div>
