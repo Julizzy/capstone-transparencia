@@ -32,7 +32,7 @@ export default function SubsidiosPage() {
 
 
 
- /*
+ 
   useEffect(() => {
     // Consumir el endpoint y mapear la respuesta
     fetch("http://127.0.0.1:8000/api/datasets/metadata")

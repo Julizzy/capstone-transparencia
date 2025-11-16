@@ -4,9 +4,20 @@ from .subsidiosVivienda_analitic import calcular_promedios_por_departamento
 DATASET_ID = "h2yr-zfb2"
 BASE_URL = "https://www.datos.gov.co/resource"
 
+# Remove headers or define them
+# If you don't have an API token, remove the headers completely
+
 count_url = f"{BASE_URL}/{DATASET_ID}.json?$select=count(*)"
-total = int(requests.get(count_url).json()[0]['count'])
-print("Total de registros:", total)
+response = requests.get(count_url)  # <-- FIXED
+
+print("COUNT STATUS:", response.status_code)
+print("COUNT TEXT:", response.text)
+
+try:
+    total = int(response.json()[0]["count"])
+except:
+    total = 0
+    print("Failed to fetch count.")
 
 def obtener_metadata_subsidios():
     meta_url = f"https://www.datos.gov.co/api/views/{DATASET_ID}"
@@ -30,4 +41,4 @@ def obtener_subsidios(limit: int = 100000):
         "analisis": {
             "promedios_por_departamento": promedios
         }
-        }
+    }
