@@ -1,0 +1,37 @@
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# Dependencias
+node_modules/
+__pycache__/
+*.pyc
+venv/
+env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Datos sensibles
+*.key
+*.pem
+
+# Backend
+backend/.env
+backend/data/*.json
+backend/__pycache__/
+backend/venv/
+
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/dist/
