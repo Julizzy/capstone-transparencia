@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
+import Chatbot from "@/components/Chatbot";
+
 
 type Subsidio = {
   departamento?: string;
@@ -18,16 +20,42 @@ export default function SubsidioDataPage() {
   const [loading, setLoading] = useState(true);
   const [filterText, setFilterText] = useState("");
   const [limit, setLimit] = useState(100); 
+  const [analisisTexto, setAnalisisTexto] = useState({
+  resumen: "",
+  tendencias: "",
+  hallazgos: "",
+  recomendaciones: "",
+});
+
 
   useEffect(() => {
     const fetchSubsidios = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:8000/api/subsidiosVivienda/");
+        const res = await fetch("http://127.0.0.1:8000/api/datasets/h2yr-zfb2?limit=5000&offset=0");
         const result = await res.json();
-        setData(result.registros || []);
+        setData(result.datos || []);
         setPromedios(result.analisis?.promedios_por_departamento || []);
+
+        const resAnalisis = await fetch("http://127.0.0.1:8000/api/analysis/h2yr-zfb2");
+        const dataAnalisis = await resAnalisis.json();
+        let cleaned = dataAnalisis.respuesta
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
+
+        const parsed = JSON.parse(cleaned);
+
+        const analisis = parsed.analisis_dataset;
+
+        setAnalisisTexto({
+        resumen: analisis.resumen_ejecutivo?.descripcion || "",
+        tendencias: analisis.tendencias_principales?.nota_muestra || "",
+        hallazgos: analisis.hallazgos_importantes || "",
+        recomendaciones:
+          analisis.recomendaciones?.sugerencias_uso?.join(", ") || ""
+        });
       } catch (error) {
-        console.error("Error fetching subsidios:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -65,6 +93,20 @@ export default function SubsidioDataPage() {
         </CardHeader>
 
         <CardContent>
+          {analisisTexto && (
+            <div className="mb-6 p-4 bg-purple-50 border-l-4 border-[#5111a6] rounded-lg shadow-sm">
+
+              <h2 className="text-xl font-bold text-[#5111a6] mb-2">
+                Análisis del Dataset
+              </h2>
+
+              {analisisTexto.resumen && (
+                <p className="text-gray-700 mb-3">
+                  <strong>Resumen:</strong> {analisisTexto.resumen}
+                </p>
+              )}
+            </div>
+          )}
           <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
             <input
               type="text"
@@ -159,6 +201,7 @@ export default function SubsidioDataPage() {
           )}
         </CardContent>
       </Card>
+      <Chatbot datasetId={"h2yr-zfb2"} />
     </div>
   );
 }

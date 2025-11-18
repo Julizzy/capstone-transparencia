@@ -29,6 +29,8 @@ export default function SubsidiosPage() {
   const [search, setSearch] = useState("");
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
+  const [metadata, setMetadata] = useState<any | null>(null);
+
 
 
 
@@ -56,6 +58,9 @@ export default function SubsidiosPage() {
         setSubsidios([subsidio]);
         setResultados([subsidio]);
       });
+    fetch("http://127.0.0.1:8000/api/metadata/h2yr-zfb2")
+      .then((res) => res.json())
+      .then((data) => setMetadata(data));
   }, []);
 
   const handleSearch = () => {
@@ -115,6 +120,44 @@ export default function SubsidiosPage() {
         >
           <Search className="w-4 h-4 mr-2" /> Filtrar
         </Button>
+        
+        {metadata && (
+          <div className="md:col-span-4">
+            <Card
+          className="border border-[#5111a6]/40 mb-8 hover:shadow-xl cursor-pointer transition"
+          onClick={() => router.push("/subsidios/h2yr-zfb2")}
+        >
+          <CardHeader>
+            <CardTitle className="text-xl text-[#5111a6]">
+              {metadata.titulo}
+            </CardTitle>
+            <CardDescription>{metadata.descripcion}</CardDescription>
+          </CardHeader>
+
+          <CardContent className="text-sm text-gray-700 space-y-2">
+            <p>
+              <strong>Fuente:</strong> {metadata.fuente}
+            </p>
+            <p>
+              <strong>Última actualización:</strong>{" "}
+              {new Date(metadata.ultima_actualizacion * 1000)
+                .toISOString()
+                .split("T")[0]}
+            </p>
+
+            <div>
+              <strong>Columnas:</strong>
+              <ul className="list-disc pl-6">
+                {metadata.columnas.map((col: string, i: number) => (
+                  <li key={i}>{col}</li>
+                ))}
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+          </div>
+        
+      )}
       </div>
 
       {/* Resultados */}
